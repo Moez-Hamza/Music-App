@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
 import authRouter from './routes/auth';
-import express, { Request, Response, urlencoded } from "express";
+import express from "express";
 import { connectToServer }  from "./db";
 import router from './routes/auth'
 
