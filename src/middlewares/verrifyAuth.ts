@@ -7,39 +7,40 @@ import { ObjectId } from "mongodb";
 
 
 
-export default (req, res, next) => {
-    const authHeader = req.headers["authorization"]
-    const token = authHeader
-    if (!token) {
-        return res.sendStatus(401)
-    } else {
-        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-            console.log(err)
-            if (err) {
+// export default (req, res, next) => {
+//     const authHeader = req.headers["authorization"]
+//     const token = authHeader
+//     if (!token) {
+//         return res.sendStatus(401)
+//     } else {
+//         jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+//             console.log(err)
+//             if (err) {
                 
-                return res.sendStatus(403)
-            }
-            req.user = user
-            res.json(user)
-            next();
-        })
-    }
-}
-
-// const injectUser = async (req:Request, res: Response, next: NextFunction) => {
-//     const db = getDB();
-//     const users = db.collection<User>('user');
-//     if (!req.headers.authorization) {
-//         req.headers.auth = new ObjectId(req.headers.id);
-//         req.user = await users.findOne({
-//             _id: req.auth.id
+//                 return res.sendStatus(403)
+//             }
+//             req.user = user
+//             res.json(user)
+//             next();
 //         })
-//         console.log("req.user", req.user, req.auth.id)
 //     }
-//     next()
 // }
 
-// export default () => [
-//     expressjwt({ secret: process.env.JWT_SECRET, algorithms: ["HS256"] }),
-//     injectUser,
-// ];
+const injectUser = async (req:any, res: Response, next: NextFunction) => {
+    const db = getDB();
+    const users = db.collection<User>('user');
+    if (!req.headers.id) {
+        req.headers.id = new ObjectId(req.headers.id);
+        req.headers.user = await users.findOne({
+            _id: req.auth.id
+        })
+        console.log(req.headers.user)
+        
+    }
+    next()
+}
+
+export default () => [
+    expressjwt({ secret: process.env.JWT_SECRET, algorithms: ["HS256"] }),
+    injectUser,
+];
